@@ -1,5 +1,6 @@
 from modules.hostname_resolver import hostname_resolver
 from modules.port_scanner import port_scanner
+from modules.ping_host import controller
 
 
 def main():
@@ -10,7 +11,7 @@ def main():
 
         print("1. Hostname Resolver")
         print("2. Port Scanner")
-        print("3. IP Geolocation")
+        print("3. Ping host")
         print("4. Exit")
 
         choice = input("\nEnter your choice (1-4): ").strip()
@@ -20,7 +21,7 @@ def main():
         elif choice == '2':
             port_scanner()
         elif choice == '3':
-            print("\nIP Geolocation coming soon.")
+            controller()
         elif choice == '4':
             print("\nExiting the program. Goodbye!")
             break

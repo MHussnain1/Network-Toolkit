@@ -3,7 +3,7 @@ def get_user_input():
     print("\n==============================")
     print("Hostname Resolver")
     print("==============================")
-    hostname = input("Enter a hostname to resolve: ")
+    hostname = input("Enter a hostname to resolve: ").strip()
     return hostname
 def resolve_hostname(hostname):
     try:
