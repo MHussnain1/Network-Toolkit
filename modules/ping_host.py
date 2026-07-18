@@ -4,7 +4,7 @@ from modules.hostname_resolver import resolve_hostname
 
 
 def get_hostname():
-    # Prompt the user for a hostname and strip trailing whitespace
+    """Prompt for the hostname that should be pinged."""
     print("\n==============================")
     print("Hostname Resolver")
     print("==============================")
@@ -13,7 +13,7 @@ def get_hostname():
 
 
 def resolve_ip(hostname):
-    # Call the external module to resolve the hostname to an IP address
+    """Resolve a hostname before passing it to the system ping command."""
     try:
         ip = resolve_hostname(hostname)
         return ip
@@ -23,10 +23,9 @@ def resolve_ip(hostname):
 
 
 def ping_host(ip):
-
-    # Execute the ping command and capture its output
+    """Ping an IPv4 address four times and return reachability and average latency."""
+    # `-n` is the Windows flag that controls the number of echo requests.
     result = subprocess.run(["ping", "-n", "4", ip], capture_output=True, text=True)
-    # Check if the ping command executed successfully
     if result.returncode == 0:
         average_time = extract_average_response_time(result.stdout)
         return True, average_time
@@ -35,8 +34,8 @@ def ping_host(ip):
 
 
 def extract_average_response_time(output):
+    """Extract the average latency from Windows `ping` output, if available."""
     try:
-        # Parse Windows-style ping output
         if "Average = " in output:
             _, _, number_str = output.rpartition("Average = ")
             number = int(number_str.strip().removesuffix("ms"))
@@ -44,12 +43,13 @@ def extract_average_response_time(output):
         else:
             print("Unexpected error")
     except (ValueError, IndexError):
-        # Return -1 if the parsing fails due to unexpected output formatting
+        # Ping output can vary with locale or platform, so parsing is best-effort.
         return -1
     return -1
 
 
 def display_result(connection, time, host, ip):
+    """Print the final reachability result for the requested host."""
     print("\n---------------------------")
     print("\n==============================")
     print("Results")
@@ -62,17 +62,15 @@ def display_result(connection, time, host, ip):
 
 
 def controller():
-    # Main orchestration logic
+    """Coordinate input, hostname resolution, pinging, and output."""
     hostname = get_hostname()
 
-    # Guard clause to ensure the user entered a hostname
     if not hostname:
         print("Error: No hostname entered.")
         return
 
     ip = resolve_ip(hostname)
 
-    # Guard clause to ensure the hostname resolved successfully
     if not ip:
         print(f"Error: Could not resolve hostname '{hostname}'")
         return

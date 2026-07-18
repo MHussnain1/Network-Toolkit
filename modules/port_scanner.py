@@ -3,6 +3,7 @@ from modules.hostname_resolver import resolve_hostname
 
 
 def get_hostname():
+    """Prompt for the host whose port will be checked."""
     print("\n==============================")
     print("Port Scanner")
     print("==============================")
@@ -12,6 +13,7 @@ def get_hostname():
 
 
 def get_port():
+    """Prompt until the user provides a valid TCP port number."""
     port_input = input("Enter a port number: ").strip()
     if not port_input.isdigit():
         print("\nInvalid input. Please enter a valid port number.")
@@ -23,6 +25,7 @@ def get_port():
 
 
 def resolve_ip(hostname):
+    """Resolve a hostname for scanning and report lookup failures to the user."""
     try:
         ip_address = resolve_hostname(hostname)
         return ip_address
@@ -32,9 +35,11 @@ def resolve_ip(hostname):
 
 
 def scan_port(ip, port):
+    """Return whether a TCP connection to the given address and port succeeds."""
     if ip is None:
         print("\nCannot scan ports because the IP address could not be resolved.")
         return False
+    # Use TCP because port availability is determined by a TCP connection attempt.
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
         result = sock.connect_ex((ip, port))
@@ -48,6 +53,7 @@ def scan_port(ip, port):
 
 
 def display_results(ip, port, result):
+    """Present the connection-attempt outcome."""
     if result:
         print(f"\nPort {port} on {ip} is open.")
     else:
@@ -55,6 +61,7 @@ def display_results(ip, port, result):
 
 
 def port_scanner():
+    """Run the interactive single-port scanning workflow."""
     ip = resolve_ip(get_hostname())
     port = get_port()
     result = scan_port(ip, port)
