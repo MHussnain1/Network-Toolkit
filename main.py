@@ -4,6 +4,7 @@ from modules.ping_host import controller
 from modules.local_ipinformation import local_ip_information
 from modules.DNS_Lookup import controller
 from modules.public_ip import controller
+from modules.ip_geolocation import controller
 
 
 def main():
@@ -19,32 +20,36 @@ def main():
         print("5. DNS_LOOKUP")
         print("6. Public IP information ")
         print("7. Exit")
+        print("8. Exit")
+        choice = input("\nEnter your choice (1-8): ").strip()
 
-        choice = input("\nEnter your choice (1-7): ").strip()
-
-        if choice == '1':
+        if choice == "1":
             hostname_resolver()
 
-        elif choice == '2':
+        elif choice == "2":
             port_scanner()
 
-        elif choice == '3':
+        elif choice == "3":
             controller()
 
-        elif choice == '4':
+        elif choice == "4":
             local_ip_information()
 
-        elif choice == '5':
-            controller()
-        elif choice == '6':
+        elif choice == "5":
             controller()
 
-        elif choice == '7':
+        elif choice == "6":
+            controller()
+
+        elif choice == "7":
+            controller()
+
+        elif choice == "8":
             print("\nExiting the program. Goodbye!")
             break
 
         else:
-            print("\nInvalid choice. Please enter a number between 1 and 7.")
+            print("\nInvalid choice. Please enter a number between 1 and 8.")
 
 
 if __name__ == "__main__":
