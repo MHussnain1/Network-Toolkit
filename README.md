@@ -91,11 +91,29 @@ Gets the computer name with `socket.gethostname()` and resolves it to an IPv4 ad
 
 Uses `socket.getaddrinfo()` to collect all returned IPv4 and IPv6 addresses for a hostname. The output is displayed as Python sets, so the order is not guaranteed.
 
-### Public IP and geolocation
+### Public IP
 
-The public-IP utility first checks connectivity by opening a short connection to `8.8.8.8:53`, then requests the address from [ipify](https://www.ipify.org/). The geolocation utility sends that address to [ip-api.com](https://ip-api.com/) and displays the returned country, region, city, and timezone.
+First verifies internet connectivity by establishing a socket connection to `8.8.8.8:53`. Once connectivity is confirmed, it queries the [ipify API](https://www.ipify.org/) (`https://api.ipify.org`) using Python's standard `urllib.request` to fetch and display the device's public-facing IPv4 address.
 
-These two functions require external network services. Your public IP address is sent to the relevant provider when you use them; review those providers' terms and privacy practices before use. IP geolocation is approximate and should not be treated as a precise physical location.
+### IP Geolocation (`modules/ip_geolocation.py`)
+
+Retrieves geolocation metadata for the user's public IP address using [ip-api.com](https://ip-api.com/).
+
+- **Workflow**:
+  1. Checks internet connectivity using `is_connected()` from `modules/public_ip.py`.
+  2. Fetches the public IP address using `public_ip()` from `modules/public_ip.py`.
+  3. Sends an HTTP GET request to `http://ip-api.com/json/{ip}` using Python's standard library `urllib.request`.
+  4. Parses the JSON response and outputs the location details.
+
+- **Information Displayed**:
+  - **Status**: API status (`success` or `fail`)
+  - **IP**: Public IP address queried
+  - **Country**: Country name
+  - **Region**: Region or state name (`regionName`)
+  - **City**: City name
+  - **Timezone**: Local timezone designation
+
+> **Note on Privacy & External Services**: Both Public IP lookup and IP Geolocation rely on external HTTP endpoints (`ipify.org` and `ip-api.com`). Your public IP address is transmitted to these third-party services during lookup. IP geolocation is approximate and should not be treated as a precise physical location.
 
 ## Project structure
 

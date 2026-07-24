@@ -19,7 +19,7 @@ def main():
         print("4. Local IP information")
         print("5. DNS_LOOKUP")
         print("6. Public IP information ")
-        print("7. Exit")
+        print("7. IP_Geolocation")
         print("8. Exit")
         choice = input("\nEnter your choice (1-8): ").strip()
 
