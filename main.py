@@ -6,7 +6,6 @@ from modules.DNS_Lookup import controller
 from modules.public_ip import controller
 from modules.ip_geolocation import controller
 
-
 def main():
     while True:
         print("\n==============================")
