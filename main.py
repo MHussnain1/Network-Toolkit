@@ -1,10 +1,12 @@
 from modules.hostname_resolver import hostname_resolver
 from modules.port_scanner import port_scanner
-from modules.ping_host import controller
+from modules.ping_host import controller as ping_controller
 from modules.local_ipinformation import local_ip_information
-from modules.DNS_Lookup import controller
-from modules.public_ip import controller
-from modules.ip_geolocation import controller
+from modules.DNS_Lookup import controller as dns_controller
+from modules.public_ip import controller as public_controller
+from modules.ip_geolocation import controller as geo_controller
+from modules.WHOIS_Lookup import controller as whois_controller
+
 
 def main():
     while True:
@@ -19,8 +21,9 @@ def main():
         print("5. DNS_LOOKUP")
         print("6. Public IP information ")
         print("7. IP_Geolocation")
-        print("8. Exit")
-        choice = input("\nEnter your choice (1-8): ").strip()
+        print("8. WHOIS Lookup")
+        print("9. Exit")
+        choice = input("\nEnter your choice (1-9): ").strip()
 
         if choice == "1":
             hostname_resolver()
@@ -29,27 +32,31 @@ def main():
             port_scanner()
 
         elif choice == "3":
-            controller()
+            ping_controller()
 
         elif choice == "4":
             local_ip_information()
 
         elif choice == "5":
-            controller()
+            dns_controller()
 
         elif choice == "6":
-            controller()
+            public_controller()
 
         elif choice == "7":
-            controller()
+            geo_controller()
 
         elif choice == "8":
+            whois_controller()
+
+        elif choice == "9":
             print("\nExiting the program. Goodbye!")
             break
 
         else:
-            print("\nInvalid choice. Please enter a number between 1 and 8.")
+            print("\nInvalid choice. Please enter a number between 1 and 9.")
 
 
 if __name__ == "__main__":
     main()
+
