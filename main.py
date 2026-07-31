@@ -7,6 +7,7 @@ from modules.public_ip import controller as public_controller
 from modules.ip_geolocation import controller as geo_controller
 from modules.WHOIS_Lookup import controller as whois_controller
 from modules.web_availability_check import controller as avail_controller
+from modules.HTTP_Header_Viewer import controller as header_controller
 
 def main():
     while True:
@@ -23,6 +24,7 @@ def main():
         print("7. IP_Geolocation")
         print("8. WHOIS Lookup")
         print("9. Check website availability")
+        print("10.HTTP_Header_Viewer")
         print("0. Exit")
         choice = input("\nEnter your choice (1-10): ").strip()
 
@@ -52,6 +54,10 @@ def main():
 
         elif choice == "9":
             avail_controller()
+
+        elif choice == "10":
+            header_controller()
+
         elif choice == "0":
             print("\nExiting the program. Goodbye!")
             break
@@ -62,4 +68,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
