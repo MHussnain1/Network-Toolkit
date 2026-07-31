@@ -15,6 +15,9 @@ NetworkToolKit is a small, interactive Python command-line toolkit for common ne
 | DNS Lookup | Lists the IPv4 and IPv6 addresses returned for a hostname. | `modules/DNS_Lookup.py` |
 | Public IP | Retrieves the public-facing IP address. | `modules/public_ip.py` |
 | IP Geolocation | Looks up country, region, city, and timezone for the current public IP. | `modules/ip_geolocation.py` |
+| WHOIS Lookup | Retrieves domain registration details (registrar, dates, name servers, etc.). | `modules/WHOIS_Lookup.py` |
+| Web Availability Check | Checks if a website is reachable and returns the HTTP status code. | `modules/web_availability_check.py` |
+| HTTP Header Viewer | Fetches and displays HTTP response headers from a given host. | `modules/HTTP_Header_Viewer.py` |
 
 ## Requirements
 
@@ -22,7 +25,17 @@ NetworkToolKit is a small, interactive Python command-line toolkit for common ne
 - An internet connection for public-IP and geolocation features
 - Windows for the built-in ping workflow as currently written (`ping -n 4` is the Windows syntax)
 
-There are no third-party Python dependencies. `requirements.txt` is intentionally empty because the project relies only on the standard library.
+## Dependencies
+
+Most features rely only on Python's standard library. The **WHOIS Lookup** utility requires the external `python-whois` package:
+
+- `python-whois==0.9.6`
+
+Install dependencies with:
+
+```powershell
+pip install -r requirements.txt
+```
 
 ## Installation
 
@@ -65,6 +78,9 @@ python -c "from modules.local_ipinformation import local_ip_information; local_i
 python -c "from modules.DNS_Lookup import controller; controller()"
 python -c "from modules.public_ip import controller; controller()"
 python -c "from modules.ip_geolocation import controller; controller()"
+python -c "from modules.WHOIS_Lookup import controller; controller()"
+python -c "from modules.web_availability_check import controller; controller()"
+python -c "from modules.HTTP_Header_Viewer import controller; controller()"
 ```
 
 ## How each feature works
@@ -115,12 +131,24 @@ Retrieves geolocation metadata for the user's public IP address using [ip-api.co
 
 > **Note on Privacy & External Services**: Both Public IP lookup and IP Geolocation rely on external HTTP endpoints (`ipify.org` and `ip-api.com`). Your public IP address is transmitted to these third-party services during lookup. IP geolocation is approximate and should not be treated as a precise physical location.
 
+### WHOIS Lookup
+
+Prompts for a domain name and uses the `python-whois` library to query domain registration information. Displays the domain name, registrar, organization, country, name servers, creation date, expiration date, and last updated date.
+
+### Web Availability Check
+
+Prompts for a website URL or hostname (the `https://` prefix is added automatically if missing). Uses `urllib.request.urlopen()` to send an HTTP GET request and reports the HTTP status code, reason phrase, and the final URL (after any redirects). If the request fails, a DNS resolution failure message is shown.
+
+### HTTP Header Viewer
+
+Prompts for a hostname (the `https://` prefix is added automatically if missing). Sends an HTTP GET request using `urllib.request.urlopen()` and displays key response headers: **Server**, **Content-Type**, **Content-Length**, **Date**, and **Connection**. If the request fails, a connection failure message is shown.
+
 ## Project structure
 
 ```text
 NetworkToolKit/
 ├── main.py                       # Interactive menu entry point
-├── requirements.txt              # Empty: standard-library-only project
+├── requirements.txt              # Python dependencies (python-whois)
 ├── modules/
 │   ├── hostname_resolver.py      # IPv4 hostname resolution
 │   ├── port_scanner.py           # Single TCP-port check
@@ -128,13 +156,16 @@ NetworkToolKit/
 │   ├── local_ipinformation.py    # Local hostname/IP display
 │   ├── DNS_Lookup.py             # IPv4/IPv6 DNS lookup
 │   ├── public_ip.py              # ipify public-IP lookup
-│   └── ip_geolocation.py         # ip-api geolocation lookup
+│   ├── ip_geolocation.py         # ip-api geolocation lookup
+│   ├── WHOIS_Lookup.py           # Domain WHOIS information
+│   ├── web_availability_check.py # Website HTTP availability check
+│   └── HTTP_Header_Viewer.py     # HTTP response header viewer
 └── README.md
 ```
 
-## Current launcher limitation
+## Launcher
 
-The modules are complete and can be run directly as shown above. In the present `main.py`, several imports share the generic name `controller`, so later imports overwrite earlier ones. As a result, menu choices 3–7 currently invoke the IP-geolocation controller rather than their corresponding utilities; choice 8 exits. This README documents the intended menu utilities and provides direct commands until the launcher imports are given distinct aliases.
+The interactive launcher (`main.py`) presents a numbered menu (1–10) and prompts for the hostname or port required by the selected utility. All imports use distinct aliases, so each menu choice correctly invokes its corresponding utility.
 
 ## Troubleshooting
 
@@ -148,7 +179,7 @@ The modules are complete and can be run directly as shown above. In the present 
 
 ## Contributing
 
-Contributions are welcome. Keep additions focused, use the standard library unless a dependency is justified, and test utilities only against authorized targets. Useful future improvements include fixing the controller-name collision in `main.py`, adding cross-platform ping support, setting the socket timeout before connecting, and adding automated tests.
+Contributions are welcome. Keep additions focused, use the standard library unless a dependency is justified, and test utilities only against authorized targets. Useful future improvements include adding cross-platform ping support, setting the socket timeout before connecting, and adding automated tests.
 
 ## License
 
