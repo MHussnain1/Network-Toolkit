@@ -10,6 +10,7 @@ from modules.web_availability_check import controller as avail_controller
 from modules.HTTP_Header_Viewer import controller as header_controller
 from modules.SSL_Certificate_Viewer import controller as ssl_controller
 from modules.Reverse_DNS_Lookup import controller as reverse_dns_controller
+from modules.traceroute import controller as traceroute_controller
 
 def main():
     while True:
@@ -29,8 +30,9 @@ def main():
         print("10.HTTP_Header_Viewer")
         print("11. SSL Certificate Viewer")
         print("12. Reverse DNS Lookup")
+        print("13. Traceroute")
         print("0. Exit")
-        choice = input("\nEnter your choice (1-12): ").strip()
+        choice = input("\nEnter your choice (1-13): ").strip()
 
         if choice == "1":
             hostname_resolver()
@@ -68,12 +70,15 @@ def main():
         elif choice == "12":
             reverse_dns_controller()
 
+        elif choice == "13":
+            traceroute_controller()
+
         elif choice == "0":
             print("\nExiting the program. Goodbye!")
             break
 
         else:
-            print("\nInvalid choice. Please enter a number between 1 and 12.")
+            print("\nInvalid choice. Please enter a number between 1 and 13.")
 
 
 if __name__ == "__main__":
