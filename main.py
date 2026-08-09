@@ -1,4 +1,4 @@
-from modules.hostname_resolver import hostname_resolver
+from modules.hostname_resolver import controller as hostname_resolver
 from modules.port_scanner import port_scanner
 from modules.ping_host import controller as ping_controller
 from modules.local_ipinformation import local_ip_information

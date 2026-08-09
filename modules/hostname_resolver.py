@@ -21,7 +21,7 @@ def resolve_hostname(hostname):
     
 
 
-def hostname_resolver():
+def controller():
     """Run the interactive hostname-resolution workflow."""
     hostname = get_user_input()
     try:
