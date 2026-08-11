@@ -23,10 +23,14 @@ def get_ip_geolocation(ip):
     Raises:
         RuntimeError: If network request or JSON parsing fails.
     """
-    url = f"https://ip-api.com/json/{ip}"
+    url = f"http://ip-api.com/json/{ip}"
     try:
-        # Context manager ensures the HTTP socket connection is closed cleanly
-        with urllib.request.urlopen(url, timeout=5) as response:
+        request = urllib.request.Request(
+        url,
+        headers={"User-Agent": "NetworkToolkit/1.0"}
+)
+
+        with urllib.request.urlopen(request, timeout=5) as response:
             data = response.read().decode()
 
         # Parse the JSON response body
