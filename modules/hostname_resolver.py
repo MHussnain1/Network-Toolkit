@@ -16,9 +16,9 @@ def resolve_hostname(hostname):
         ip_address = socket.gethostbyname(hostname)
         return ip_address
     except socket.gaierror as e:
-        # Add the requested hostname so callers receive actionable lookup errors.
-        raise socket.gaierror(f"Error resolving hostname '{hostname}': {e}")
-    
+        raise RuntimeError(
+        f"Error resolving hostname '{hostname}': {e}"
+    ) from e
 
 
 def controller():
