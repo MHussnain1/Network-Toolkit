@@ -1,186 +1,194 @@
-# NetworkToolKit
+# Network Toolkit
 
-NetworkToolKit is a small, interactive Python command-line toolkit for common network diagnostics. It uses Python's standard library to resolve names, check a TCP port, ping a host, inspect local and public IP addresses, perform DNS lookup, and locate the current public IP.
+Network Toolkit is a modular Python command-line application for everyday network diagnostics and information gathering. It brings common lookup, connectivity, web, and route-inspection tasks together behind one simple interactive menu.
 
-> Use these tools only against systems and networks you own or are authorized to test.
+Built for learning and authorized troubleshooting, each feature is kept in its own module and launched through a central controller.
+
+> **Disclaimer:** This project is intended for educational use and authorized network diagnostics only. Scan or test only systems and networks you own or are explicitly authorized to assess.
 
 ## Features
 
-| Utility | What it does | Module |
+| # | Module | Summary |
 | --- | --- | --- |
-| Hostname Resolver | Resolves a hostname to one IPv4 address. | `modules/hostname_resolver.py` |
-| Port Scanner | Attempts a TCP connection to one specified port (0–65535). | `modules/port_scanner.py` |
-| Ping Host | Resolves a host, sends four ICMP echo requests, and reports average latency. | `modules/ping_host.py` |
-| Local IP Information | Displays the computer hostname and its resolved IPv4 address. | `modules/local_ipinformation.py` |
-| DNS Lookup | Lists the IPv4 and IPv6 addresses returned for a hostname. | `modules/DNS_Lookup.py` |
-| Public IP | Retrieves the public-facing IP address. | `modules/public_ip.py` |
-| IP Geolocation | Looks up country, region, city, and timezone for the current public IP. | `modules/ip_geolocation.py` |
-| WHOIS Lookup | Retrieves domain registration details (registrar, dates, name servers, etc.). | `modules/WHOIS_Lookup.py` |
-| Web Availability Check | Checks if a website is reachable and returns the HTTP status code. | `modules/web_availability_check.py` |
-| HTTP Header Viewer | Fetches and displays HTTP response headers from a given host. | `modules/HTTP_Header_Viewer.py` |
+| 1 | Hostname Resolver | Resolves a hostname to an IPv4 address. |
+| 2 | Port Scanner | Tests TCP connectivity to a specified host and port. |
+| 3 | Ping Host | Uses the system ping utility to test reachability and latency. |
+| 4 | Local IP Information | Shows the local hostname and resolved IP address. |
+| 5 | DNS Lookup | Returns IPv4 and IPv6 addresses for a hostname. |
+| 6 | Public IP Information | Retrieves the current public-facing IP address. |
+| 7 | IP Geolocation | Looks up approximate location details for the public IP. |
+| 8 | WHOIS Lookup | Retrieves domain-registration information. |
+| 9 | Web Availability Checker | Checks whether a website is reachable over HTTP(S). |
+| 10 | HTTP Header Viewer | Displays response headers from a web server. |
+| 11 | SSL Certificate Viewer | Inspects a server's TLS/SSL certificate details. |
+| 12 | Reverse DNS Lookup | Resolves an IP address back to a hostname where available. |
+| 13 | Traceroute | Uses the system traceroute utility and parses the network path. |
 
-## Requirements
+## Technologies Used
 
-- Python 3.9 or later (Python 3.11+ recommended)
-- An internet connection for public-IP and geolocation features
-- Windows for the built-in ping workflow as currently written (`ping -n 4` is the Windows syntax)
+- Python
+- `socket`
+- `subprocess`
+- `urllib`
+- `ssl`
+- `re`
+- `python-whois`
+- JSON APIs
 
-## Dependencies
-
-Most features rely only on Python's standard library. The **WHOIS Lookup** utility requires the external `python-whois` package:
-
-- `python-whois==0.9.6`
-
-Install dependencies with:
-
-```powershell
-pip install -r requirements.txt
-```
-
-## Installation
-
-Clone or download the repository, then run the program from its root directory:
-
-```powershell
-git clone <your-repository-url>
-cd NetworkToolKit
-python main.py
-```
-
-Optionally, create and activate a virtual environment:
-
-```powershell
-python -m venv venv
-.\venv\Scripts\Activate.ps1
-python main.py
-```
-
-## Using the toolkit
-
-The interactive launcher is `main.py`. It presents a numbered menu and prompts for the hostname or port required by the selected utility.
-
-Typical inputs include:
-
-```text
-Hostname: example.com
-Port: 443
-```
-
-### Run a utility directly
-
-Every feature can also be started directly from Python. This is useful for automation, development, or when you want to run one tool by itself.
-
-```powershell
-python -c "from modules.hostname_resolver import hostname_resolver; hostname_resolver()"
-python -c "from modules.port_scanner import port_scanner; port_scanner()"
-python -c "from modules.ping_host import controller; controller()"
-python -c "from modules.local_ipinformation import local_ip_information; local_ip_information()"
-python -c "from modules.DNS_Lookup import controller; controller()"
-python -c "from modules.public_ip import controller; controller()"
-python -c "from modules.ip_geolocation import controller; controller()"
-python -c "from modules.WHOIS_Lookup import controller; controller()"
-python -c "from modules.web_availability_check import controller; controller()"
-python -c "from modules.HTTP_Header_Viewer import controller; controller()"
-```
-
-## How each feature works
-
-### Hostname Resolver
-
-Prompts for a hostname and calls `socket.gethostbyname()` to return one IPv4 address. Invalid or unresolvable hostnames are reported as lookup errors.
-
-### Port Scanner
-
-Prompts for a hostname and a single TCP port. The hostname is resolved first, then the toolkit uses `socket.connect_ex()` to test whether a TCP connection can be established. A successful connection is reported as **open**; any unsuccessful connection is reported as **closed**.
-
-This is a single-port TCP connectivity check, not a multi-port scanner and not a UDP scanner. Firewalls, filtering, unreachable hosts, or service policies can also cause a port to be reported as closed.
-
-### Ping Host
-
-Resolves a hostname to IPv4, runs the Windows `ping` command four times, and displays whether the host was reachable and the average response time. Ping can be blocked even when a service is otherwise available.
-
-### Local IP Information
-
-Gets the computer name with `socket.gethostname()` and resolves it to an IPv4 address. On hosts with multiple interfaces, VPNs, or unusual hostname configuration, the displayed address may not be the interface you expect.
-
-### DNS Lookup
-
-Uses `socket.getaddrinfo()` to collect all returned IPv4 and IPv6 addresses for a hostname. The output is displayed as Python sets, so the order is not guaranteed.
-
-### Public IP
-
-First verifies internet connectivity by establishing a socket connection to `8.8.8.8:53`. Once connectivity is confirmed, it queries the [ipify API](https://www.ipify.org/) (`https://api.ipify.org`) using Python's standard `urllib.request` to fetch and display the device's public-facing IPv4 address.
-
-### IP Geolocation (`modules/ip_geolocation.py`)
-
-Retrieves geolocation metadata for the user's public IP address using [ip-api.com](https://ip-api.com/).
-
-- **Workflow**:
-  1. Checks internet connectivity using `is_connected()` from `modules/public_ip.py`.
-  2. Fetches the public IP address using `public_ip()` from `modules/public_ip.py`.
-  3. Sends an HTTP GET request to `http://ip-api.com/json/{ip}` using Python's standard library `urllib.request`.
-  4. Parses the JSON response and outputs the location details.
-
-- **Information Displayed**:
-  - **Status**: API status (`success` or `fail`)
-  - **IP**: Public IP address queried
-  - **Country**: Country name
-  - **Region**: Region or state name (`regionName`)
-  - **City**: City name
-  - **Timezone**: Local timezone designation
-
-> **Note on Privacy & External Services**: Both Public IP lookup and IP Geolocation rely on external HTTP endpoints (`ipify.org` and `ip-api.com`). Your public IP address is transmitted to these third-party services during lookup. IP geolocation is approximate and should not be treated as a precise physical location.
-
-### WHOIS Lookup
-
-Prompts for a domain name and uses the `python-whois` library to query domain registration information. Displays the domain name, registrar, organization, country, name servers, creation date, expiration date, and last updated date.
-
-### Web Availability Check
-
-Prompts for a website URL or hostname (the `https://` prefix is added automatically if missing). Uses `urllib.request.urlopen()` to send an HTTP GET request and reports the HTTP status code, reason phrase, and the final URL (after any redirects). If the request fails, a DNS resolution failure message is shown.
-
-### HTTP Header Viewer
-
-Prompts for a hostname (the `https://` prefix is added automatically if missing). Sends an HTTP GET request using `urllib.request.urlopen()` and displays key response headers: **Server**, **Content-Type**, **Content-Length**, **Date**, and **Connection**. If the request fails, a connection failure message is shown.
-
-## Project structure
+## Project Structure
 
 ```text
 NetworkToolKit/
-├── main.py                       # Interactive menu entry point
-├── requirements.txt              # Python dependencies (python-whois)
+├── main.py                         # Menu, dispatch map, and application loop
 ├── modules/
-│   ├── hostname_resolver.py      # IPv4 hostname resolution
-│   ├── port_scanner.py           # Single TCP-port check
-│   ├── ping_host.py              # Windows ping workflow
-│   ├── local_ipinformation.py    # Local hostname/IP display
-│   ├── DNS_Lookup.py             # IPv4/IPv6 DNS lookup
-│   ├── public_ip.py              # ipify public-IP lookup
-│   ├── ip_geolocation.py         # ip-api geolocation lookup
-│   ├── WHOIS_Lookup.py           # Domain WHOIS information
-│   ├── web_availability_check.py # Website HTTP availability check
-│   └── HTTP_Header_Viewer.py     # HTTP response header viewer
-└── README.md
+│   ├── __init__.py                  # Marks modules as a Python package
+│   ├── hostname_resolver.py         # Hostname → IPv4 resolution
+│   ├── port_scanner.py              # Single TCP-port connectivity check
+│   ├── ping_host.py                 # Platform-aware ping command and parsing
+│   ├── local_ipinformation.py       # Local hostname and IP information
+│   ├── DNS_Lookup.py                # IPv4/IPv6 DNS lookup
+│   ├── public_ip.py                 # Connectivity check and public-IP API call
+│   ├── ip_geolocation.py            # Public-IP geolocation API call
+│   ├── WHOIS_Lookup.py              # Domain WHOIS lookup
+│   ├── web_availability_check.py    # Website reachability check
+│   ├── HTTP_Header_Viewer.py        # HTTP response-header display
+│   ├── SSL_Certificate_Viewer.py    # TLS/SSL certificate inspection
+│   ├── Reverse_DNS_Lookup.py        # IP address → hostname lookup
+│   └── traceroute.py                # Platform-aware traceroute and hop parsing
+├── requirements.txt                 # Third-party dependencies
+├── README.md                        # Project documentation
+└── .gitignore
 ```
 
-## Launcher
+The `modules/` directory contains an independent controller for each network utility; `main.py` provides the menu and routes a selected option to that controller.
 
-The interactive launcher (`main.py`) presents a numbered menu (1–10) and prompts for the hostname or port required by the selected utility. All imports use distinct aliases, so each menu choice correctly invokes its corresponding utility.
+### Module Structure
 
-## Troubleshooting
+Each feature module follows the same lightweight pattern: helper functions gather and validate input, a network-operation function performs the lookup or request, a display function formats the result, and `controller()` coordinates the workflow. `main.py` imports these controllers and maps them to menu options 1–13.
 
-| Problem | Likely cause and action |
+| Module | Internal workflow / main functions |
 | --- | --- |
-| `python` is not recognized | Install Python and ensure it is added to `PATH`, or use the Python launcher: `py main.py`. |
-| Hostname cannot be resolved | Check spelling, DNS connectivity, and whether the name has an IPv4 record. |
-| Ping fails | The host may block ICMP; test a known service with the port checker if you are authorized. |
-| Public IP / geolocation fails | Confirm internet access and that the external provider is reachable. |
-| Ping does not work on macOS/Linux | The current command uses Windows' `-n` flag. Update it to the platform-appropriate `-c` flag before running there. |
+| `hostname_resolver.py` | `get_user_input()` → `resolve_hostname()` → `controller()` |
+| `port_scanner.py` | Input helpers → `resolve_ip()` → `scan_port()` → `display_results()` → `controller()` |
+| `ping_host.py` | Input and IP resolution → `ping_host()` → `extract_average_response_time()` → `display_result()` → `controller()` |
+| `local_ipinformation.py` | `get_local_hostname()` → `resolve_ip()` → `display_result()` → `controller()` |
+| `DNS_Lookup.py` | `get_hostname()` → `dns_info()` → `display()` → `controller()` |
+| `public_ip.py` | `is_connected()` → `public_ip()` → `display_result()` → `controller()` |
+| `ip_geolocation.py` | Reuses public-IP helpers → `get_ip_geolocation()` → `display_result()` → `controller()` |
+| `WHOIS_Lookup.py` | `get_domain()` → `whois_info()` → formatting helpers → `display_result()` → `controller()` |
+| `web_availability_check.py` | `get_website()` → `normalize_url()` → `check_website()` → `display_result()` → `controller()` |
+| `HTTP_Header_Viewer.py` | `get_host()` → `host_validation()` → `get_header()` → `display()` → `controller()` |
+| `SSL_Certificate_Viewer.py` | `get_domain()` → `get_certificate()` → `parse_certificate()` → `display_result()` → `controller()` |
+| `Reverse_DNS_Lookup.py` | `get_ip()` → `reverse_dns_lookup()` → `display_result()` → `controller()` |
+| `traceroute.py` | `get_host()` → `run_traceroute()` → hop-parsing helpers → `display_result()` → `controller()` |
 
-## Contributing
+## Installation
 
-Contributions are welcome. Keep additions focused, use the standard library unless a dependency is justified, and test utilities only against authorized targets. Useful future improvements include adding cross-platform ping support, setting the socket timeout before connecting, and adding automated tests.
+1. Clone the repository.
 
-## License
+   ```powershell
+   git clone https://github.com/MHussnain1/Network-Toolkit.git
+   cd Network-Toolkit
+   ```
 
-No license file is currently included. Add a license before distributing or reusing this project under defined terms.
+2. Create and activate a virtual environment.
+
+   ```powershell
+   python -m venv venv
+   .\venv\Scripts\Activate.ps1
+   ```
+
+3. Install the requirements.
+
+   ```powershell
+   pip install -r requirements.txt
+   ```
+
+## Usage
+
+Run the interactive application from the project root:
+
+```powershell
+python main.py
+```
+
+Example menu:
+
+```text
+==============================
+      Network Toolkit
+==============================
+1.  Hostname Resolver
+2.  Port Scanner
+3.  Ping Host
+...
+11. SSL Certificate Viewer
+12. Reverse DNS Lookup
+13. Traceroute
+0.  Exit
+
+Enter your choice (0-13):
+```
+
+Select a numbered utility and provide the requested hostname, IP address, URL, or port.
+
+## Example Output
+
+### DNS Lookup
+
+```text
+Enter hostname: example.com
+
+DNS Lookup Results
+IPv4 addresses: {'93.184.216.34'}
+IPv6 addresses: set()
+```
+
+### Traceroute
+
+```text
+Enter hostname: example.com
+Tracing route to example.com [93.184.216.34]
+
+  1    <1 ms    <1 ms    <1 ms  192.168.1.1
+  2    12 ms    11 ms    13 ms  10.0.0.1
+  ...
+```
+
+Actual results vary with DNS configuration, firewalls, operating system, and network conditions.
+
+## Design and Architecture
+
+The project follows a modular, controller-based workflow:
+
+```text
+User input → main.py menu → selected module controller → network/API operation → formatted result
+```
+
+`main.py` owns the application loop, menu display, and option-to-controller dispatch. Individual modules focus on one diagnostic responsibility, which keeps the code easier to test, extend, and debug without affecting unrelated tools.
+
+## Error Handling
+
+The toolkit is designed to fail clearly and return to the menu where possible. It includes input validation and handles common operational issues such as:
+
+- Invalid menu choices, hostnames, IP addresses, URLs, and ports
+- Connection timeouts and unavailable services
+- DNS resolution failures
+- Network and HTTP errors from local operations or external APIs
+- `Ctrl+C` interruptions, with a graceful option to return to the menu or exit
+
+## Testing
+
+Each module was tested individually during development and then exercised through the main application menu.
+
+Testing included valid and invalid user input, DNS resolution failures, connection timeouts, unreachable hosts, HTTP errors, SSL/TLS connection errors, missing traceroute responses, WHOIS lookup failures, and `Ctrl+C` interruption handling. All 13 modules were reviewed as part of the final development cycle.
+
+## Learning and Project Goals
+
+Network Toolkit was built to strengthen practical Python and networking skills, including debugging, modular programming, command-line workflows, DNS and socket operations, web requests, TLS inspection, and system-level networking concepts.
+
+It is also a compact foundation for experimenting with better validation, cross-platform support, automated tests, and additional diagnostic tools.
+
+## Author
+
+[MHussnain1](https://github.com/MHussnain1)
