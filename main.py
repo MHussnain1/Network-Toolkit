@@ -1,6 +1,10 @@
 import sys
 
-# Import module controllers with aliased names for consistency
+
+# ============================================================
+# Module Imports
+# ============================================================
+
 try:
     from modules.DNS_Lookup import controller as dns_controller
     from modules.HTTP_Header_Viewer import controller as header_controller
@@ -17,17 +21,32 @@ try:
     from modules.hostname_resolver import (
         controller as hostname_resolver_controller,
     )
+
 except ImportError as e:
-    print(f"\n[Initialization Error] Failed to load module dependency: {e}")
-    print("Please ensure all modules and required packages are installed.")
+    print("\n==============================")
+    print(" Initialization Error")
+    print("==============================")
+    print(f"\nFailed to load a Network Toolkit module:")
+    print(f"{e}")
+    print("\nPlease check that:")
+    print("  - All module files exist.")
+    print("  - Module filenames are correct.")
+    print("  - Required packages are installed.")
+    print("  - You are running the program from the project root.")
     sys.exit(1)
 
 
+# ============================================================
+# User Interface
+# ============================================================
+
 def display_menu():
-    """Renders the main Network Toolkit menu options to the console."""
+    """Display the main Network Toolkit menu."""
+
     print("\n==============================")
-    print(" Network Toolkit")
+    print("      Network Toolkit")
     print("==============================")
+
     print("1.  Hostname Resolver")
     print("2.  Port Scanner")
     print("3.  Ping Host")
@@ -44,12 +63,27 @@ def display_menu():
     print("0.  Exit")
 
 
+def pause():
+    """Pause execution before returning to the main menu."""
+
+    try:
+        input("\nPress Enter to return to the main menu...")
+    except KeyboardInterrupt:
+        print("\n\nReturning to main menu...")
+
+
+# ============================================================
+# Menu Dispatch
+# ============================================================
+
 def get_menu_dispatch():
-    """Maps menu option strings directly to their corresponding module controllers.
+    """
+    Return a mapping between menu choices and module controllers.
 
     Returns:
-        dict: Mapping of string choice keys to function references.
+        dict: Menu option mapped to its corresponding controller.
     """
+
     return {
         "1": hostname_resolver_controller,
         "2": port_controller,
@@ -67,33 +101,90 @@ def get_menu_dispatch():
     }
 
 
+# ============================================================
+# Main Application
+# ============================================================
+
 def main():
-    """Master menu loop orchestrating execution of network toolkit modules."""
+    """Run the main Network Toolkit application loop."""
+
     dispatch = get_menu_dispatch()
 
     while True:
         try:
             display_menu()
+
             choice = input("\nEnter your choice (0-13): ").strip()
+
+            # ------------------------------------------------
+            # Exit
+            # ------------------------------------------------
 
             if choice == "0":
                 print("\nExiting Network Toolkit. Goodbye!")
                 break
 
+            # ------------------------------------------------
+            # Execute selected module
+            # ------------------------------------------------
+
             if choice in dispatch:
-                # Execute selected module controller cleanly
-                dispatch[choice]()
+                print()
+
+                controller = dispatch[choice]
+                controller()
+
+                pause()
+
+            # ------------------------------------------------
+            # Invalid choice
+            # ------------------------------------------------
+
             else:
-                print("\nInvalid choice. Please enter a number between 0 and 13.")
+                print(
+                    "\nInvalid choice."
+                    "\nPlease enter a number between 0 and 13."
+                )
+
+        except KeyboardInterrupt:
+            print("\n\nOperation cancelled.")
+
+            try:
+                continue_running = input(
+                    "\nPress Enter to return to the menu "
+                    "or type '0' to exit: "
+                ).strip()
+
+                if continue_running == "0":
+                    print("\nExiting Network Toolkit. Goodbye!")
+                    break
+
+            except KeyboardInterrupt:
+                print("\n\nExiting Network Toolkit. Goodbye!")
+                break
 
         except RuntimeError as e:
-            # Catch module network errors without crashing the main application loop
-            print(f"\n[Tool Error] {e}")
-            input("\nPress Enter to return to the main menu...")
-        except KeyboardInterrupt:
-            # Catch Ctrl+C during input or execution and return gracefully to main loop
-            print("\n\nOperation cancelled by user.")
+            print("\n==============================")
+            print(" Tool Error")
+            print("==============================")
+            print(f"\n{e}")
 
+            pause()
+
+        except Exception as e:
+            # Last-resort protection so one unexpected module
+            # error does not terminate the entire toolkit.
+            print("\n==============================")
+            print(" Unexpected Error")
+            print("==============================")
+            print(f"\n{type(e).__name__}: {e}")
+
+            pause()
+
+
+# ============================================================
+# Script Entry Point
+# ============================================================
 
 if __name__ == "__main__":
     main()
