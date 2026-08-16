@@ -1,10 +1,7 @@
 import sys
-
-
 # ============================================================
 # Module Imports
 # ============================================================
-
 try:
     from modules.DNS_Lookup import controller as dns_controller
     from modules.HTTP_Header_Viewer import controller as header_controller
@@ -18,9 +15,8 @@ try:
     from modules.traceroute import controller as traceroute_controller
     from modules.web_availability_check import controller as avail_controller
     from modules.WHOIS_Lookup import controller as whois_controller
-    from modules.hostname_resolver import (
-        controller as hostname_resolver_controller,
-    )
+    from modules.hostname_resolver import controller as hostname_resolver_controller
+    
 
 except ImportError as e:
     print("\n==============================")
@@ -34,12 +30,9 @@ except ImportError as e:
     print("  - Required packages are installed.")
     print("  - You are running the program from the project root.")
     sys.exit(1)
-
-
 # ============================================================
 # User Interface
 # ============================================================
-
 def display_menu():
     """Display the main Network Toolkit menu."""
 
@@ -70,12 +63,9 @@ def pause():
         input("\nPress Enter to return to the main menu...")
     except KeyboardInterrupt:
         print("\n\nReturning to main menu...")
-
-
 # ============================================================
 # Menu Dispatch
 # ============================================================
-
 def get_menu_dispatch():
     """
     Return a mapping between menu choices and module controllers.
@@ -99,12 +89,9 @@ def get_menu_dispatch():
         "12": reverse_dns_controller,
         "13": traceroute_controller,
     }
-
-
 # ============================================================
 # Main Application
 # ============================================================
-
 def main():
     """Run the main Network Toolkit application loop."""
 
@@ -180,11 +167,8 @@ def main():
             print(f"\n{type(e).__name__}: {e}")
 
             pause()
-
-
 # ============================================================
 # Script Entry Point
 # ============================================================
-
 if __name__ == "__main__":
     main()
